@@ -109,7 +109,7 @@ router('get', '/form', function(){
 		'<h1>Auth form</h1>',
 		'Plain text without formatting',
 	];
-	renderHTML('form', $_out);
+	renderView('form', $_out);
 });
 
 
@@ -219,7 +219,7 @@ router('get', '/form', function(){
         'submit'   => '{"name": "submit", "id": "Submit"}'
     ];
     form(['method'=>'POST', 'action'=>getHost().'/form', 'fields'=>$_form_fields]);
-    renderHTML('form');
+    renderView('form');
 });
 
 //POST action proccessing
