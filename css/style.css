@@ -1,0 +1,46 @@
+body { 
+	font-family: 'Roboto', Helvetica, sans-serif; 
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: 100%;
+  width: 150px;
+  -webkit-box-sizing: border-box; /* For legacy WebKit based browsers */
+     -moz-box-sizing: border-box; /* For legacy (Firefox <29) Gecko based browsers */
+          box-sizing: border-box;
+}
+
+textarea {
+  vertical-align: top;
+}
+
+#Password, #Username { 
+	display: block; 
+	background-color: #EEEEEE;
+	color: #000000;
+	margin: 6px;
+	border: 1px solid #666666;
+	border-radius: 0;
+	padding: 6px;
+	-webkit-appearance: none;
+}
+
+#Submit {
+	margin: 6px;
+	padding: 6px;
+	border: 1px solid #999999;
+	border-radius: 0;
+	background-color: #666666;
+	color: #FFFFFF;
+	-webkit-appearance: none;
+}
+
+input[text]:focus {
+  background   : rgba(0,0,0,.1);
+  border-radius: 5px;
+  outline      : none;
+  width: 200px;
+}
+
+.prices { height: 100px; overflow-y: scroll; }
