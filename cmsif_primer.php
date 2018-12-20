@@ -9,7 +9,7 @@ router('get', '/profile', function(){
     renderView('profile');
 });
 
-router('get', '/calc', CMSIF_MODULES.'/calc.php');
+router('get', '/test', CMSIF_MODULES.'test.php');
 
 router('get', '/main', function(){
 
@@ -17,7 +17,7 @@ router('get', '/main', function(){
 
     echo 'User: ', getUser(), '<br />'.EOL;
     echo date_default_timezone_get(), '<br />'.EOL;
-    echo cookie('language'), '<br />'.EOL;
+    echo cookieGet('language'), '<br />'.EOL;
     echo version(), '<br />'.EOL;
     echo getId(), '<br />'.EOL;
     echo getModule(), '<br />'.EOL;
@@ -25,18 +25,6 @@ router('get', '/main', function(){
 
     //dbConnect();
     //dbQuery(['SHOW TABLES']);
-
-    print_r( exchange_rate(['EUR'=>'RUB']) );
-    echo '<br />'.EOL;
-    print_r( exchange_rate(['EUR'=>'TRY']) );
-    echo '<br />'.EOL;
-    echo turkey_exchange_rate('USD', 3);
-    echo '<br />'.EOL;
-    echo turkey_exchange_rate('EUR');
-    echo '<br />'.EOL;
-    echo 'TRY:', getExchangeRate('EUR', 'TRY', 4);
-    echo '<br />';
-    echo 'RUB:', getExchangeRate('EUR', 'RUB', 4);
 
 });
 
@@ -47,6 +35,11 @@ router('get', '/exchange', function(){
     print_r( exchange_rate(['EUR'=>'RUB']) );
     echo '<br />'.EOL;
     print_r( exchange_rate(['EUR'=>'TRY']) );
+    echo '<br />'.EOL;
+
+    echo 'TRY in USD', turkey_exchange_rate('USD', 3);
+    echo '<br />'.EOL;
+    echo 'TRY in EUR', turkey_exchange_rate('EUR');
     echo '<br />'.EOL;
 
     echo 'TRY:', getExchangeRate('EUR', 'TRY', 4);
