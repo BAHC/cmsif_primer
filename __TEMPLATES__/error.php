@@ -1,9 +1,9 @@
 <head>
-<?=$_assets?>
+<?=$assets?>
 </head>
 <body>
 <div class="alert">
-<?=$_content?>
+<?=$content?>
 </div>
 </body>
 </html>

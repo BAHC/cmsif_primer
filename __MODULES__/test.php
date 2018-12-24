@@ -2,7 +2,7 @@
 assetExternal('//fonts.googleapis.com/css?family=Roboto', 'css');
 asset('style.css');
 
-$_content = '<p>Test content</p>';
+$content = '<p>Test content</p>';
 
-renderBlock($_content, 'content');
+renderBlock($content, 'content');
 renderView('main');

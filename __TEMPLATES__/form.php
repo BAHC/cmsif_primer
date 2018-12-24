@@ -1,7 +1,7 @@
 <head>
-<?=$_assets?>
+<?=$assets?>
 </head>
 <body>
-<?=$_content?>
+<?=$content?>
 </body>
 </html>

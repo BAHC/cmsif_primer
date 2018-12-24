@@ -1,5 +1,51 @@
 <?php
+const HOME = '';
+/**
+ * Custom HOME page
+ */
+router('get', '/', function(){
+    headerHTML();
+    echo assetExternal('http://necolas.github.com/normalize.css');
+    echo assetExternal('//fonts.googleapis.com/css?family=Roboto', 'css');
+    echo asset('style.css');
+    echo CMSIF_SYSTEM_NAME, '<br />'.EOL;
 
+    echo '<p><a href="'.getHost().'/files">Files</a></p>'. EOL;
+    echo '<p><a href="'.getHost().'/profile">Profile</a></p>'. EOL;
+    echo '<p><a href="'.getHost().'/main">Main</a></p>'. EOL;
+    echo '<p><a href="'.getHost().'/exchange">Exchange</a></p>'. EOL;
+    echo '<p><a href="'.getHost().'/exchange/turkey">Turkey Lira</a></p>'. EOL;
+    echo '<p><a href="'.getHost().'/article/1">Article 1</a></p>'. EOL;
+    echo '<p><a href="'.getHost().'/article/2">Article 2</a></p>'. EOL;
+    echo '<p><a href="'.getHost().'/form">Form</a></p>'. EOL;
+    echo '<p><a href="'.getHost().'/db">DB select</a></p>'. EOL;
+});
+
+const FILES = '';
+router('get', '/files', function(){
+    headerHTML();
+    echo assetExternal('http://necolas.github.com/normalize.css');
+    echo assetExternal('//fonts.googleapis.com/css?family=Roboto', 'css');
+    echo asset('style.css');
+
+    echo '<p><a href="'.getHost().'/">Home</a></p>'. EOL;
+
+    //Read HTML and PLAIN text files
+    echo fileRead('test.html', 'html'), '<br />'.EOL;
+    echo fileRead('test.html'), '<br />'.EOL;
+
+    //Write and Read JSON format files
+    fileWrite('test2.json', ['1'=>'a', '2'=>'b', '3'=>'c', '4'=> 'd'], 'json');
+    echo fileRead('test2.json'), '<br />'.EOL;
+    dump( fileRead('test.json', 'json') );
+
+    //Update file
+    fileWrite('test3.txt', 'This is text file. Last Access Date: '. date('Y-m-d H:i:s', time()) );
+    echo fileRead('test3.txt'), '<br />'.EOL;
+
+});
+
+const PROFILE = '';
 //Complex template
 router('get', '/profile', function(){
 
@@ -9,11 +55,12 @@ router('get', '/profile', function(){
     renderView('profile');
 });
 
-router('get', '/test', CMSIF_MODULES.'test.php');
-
+const MAIN = '';
 router('get', '/main', function(){
 
     headerHTML();
+
+    echo '<p><a href="'.getHost().'/">Home</a></p>'. EOL;
 
     echo 'User: ', getUser(), '<br />'.EOL;
     echo date_default_timezone_get(), '<br />'.EOL;
@@ -23,14 +70,14 @@ router('get', '/main', function(){
     echo getModule(), '<br />'.EOL;
     echo getMethod(), '<br />'.EOL;
 
-    //dbConnect();
-    //dbQuery(['SHOW TABLES']);
-
 });
 
+const EXCHANGE = '';
 router('get', '/exchange', function(){
 
     headerHTML();
+
+    echo '<p><a href="'.getHost().'/">Home</a></p>'. EOL;
 
     print_r( exchange_rate(['EUR'=>'RUB']) );
     echo '<br />'.EOL;
@@ -48,174 +95,112 @@ router('get', '/exchange', function(){
 
 });
 
+const EXCHANGE_TURKEY = '';
 router('get', '/exchange/turkey', function(){
-	
-	headerHTML();
-	echo '<br />'.EOL;
-	echo turkey_exchange_rate('USD', 3);
-	echo '<br />'.EOL;
-	echo turkey_exchange_rate('EUR');
+
+    headerHTML();
+
+    echo '<p><a href="'.getHost().'/">Home</a></p>'. EOL;
+
+    echo '<br />'.EOL;
+    echo 'USD: ', turkey_exchange_rate('USD', 3);
+    echo '<br />'.EOL;
+    echo 'EUR: ', turkey_exchange_rate('EUR', 3);
 
 });
 
+const ARTICLES = '';
+//Routing with IDs
 router('get', '/article/([0-9]*)', function($_matches){
-	$_out = '';
-	switch( $_matches[1] )
-	{
-		case 1:
-			$_out .= '<h3>Article '. (int) $_matches[1].'</h3>'.EOL;
-			$_out .= view('This is my article number 1');
-			break;
-		case 2:
-			$_out .= '<h3>Article '. (int) $_matches[1].'</h3>'.EOL;
-			$_para = [
-				'This is my second article.', 
-				'And the article have two paragraphs',
-			];
-			$_out .= view($_para);
+    $out = '';
+    switch( $_matches[1] )
+    {
+        case 1:
+            $out .= '<h3>Article '. (int) $_matches[1].'</h3>'.EOL;
+            $out .= view('<p>This is my article number 1</p>');
+            break;
+        case 2:
+            $out .= '<h3>Article '. (int) $_matches[1].'</h3>'.EOL;
+            $out .= view( [
+                '<p>This is my second article.</p>', 
+                '<p>This is my second paragraph.</p>'] 
+            );
+            break;
+        default:
+            error404();
+            break;
+    }
 
-			break;
-		default:
-			error404();
-			break;
-	}
-	
-	if(!empty($_out))
-	{
-		headerHTML();
-		echo $_out;
-	}
+    headerHTML();
+    echo $out;
+    footerHTML();
 });
 
-router('get', '/form', function(){
-	assetExternal('http://necolas.github.com/normalize.css');
-	assetExternal('//fonts.googleapis.com/css?family=Roboto', 'css');
-	asset('style.css');
-
-	$_form_fields = [
-		'text'     => '{"name": "username", "id": "Username"}',
-		'password' => '{"name": "password", "id": "Password"}',
-		'submit'   => '{"name": "submit", "id": "Submit"}'
-	];
-	form(['method'=>'POST', 'action'=>getHost().'/form', 'fields'=>$_form_fields]);
-	$_out = [
-		'<h1>Auth form</h1>',
-		'Plain text without formatting',
-	];
-	renderView('form', $_out);
-});
-
-
-router('post', '/form', function(){ 
-	dump(filterPOST());
-});
-
+const DB = '';
 router('get', '/db', function(){
-    $_out = dbQuery(['select * from orders where total=0']);
+    headerHTML();
+
+    echo CMSIF_SYSTEM_NAME, '<br />'.EOL;
+
+    $_out = dbQuery(['SELECT * FROM orders WHERE total>1000 limit 2']);
     dump($_out);
+
+    dump(dbQuery(['SHOW TABLES']));
     dump(dbDisconnect());
 });
 
+const HTTP_AUTH = '';
 router('get', '/login', function(){
     auth('http');
 });
 
-router('get', '/', function(){
-    headerHTML();
-    echo assetExternal('http://necolas.github.com/normalize.css');
-    echo assetExternal('//fonts.googleapis.com/css?family=Roboto', 'css');
-    echo asset('style.css');
-
-
-    echo CMSIF_SYSTEM_NAME, '<br />'.EOL;
-
-    echo fileRead('test.html', 'html'), '<br />'.EOL;
-
-    echo fileRead('test.html'), '<br />'.EOL;
-
-    fileWrite('test2.json', ['1'=>'a', '2'=>'b', '3'=>'c', '4'=> 'd'], 'json');
-
-    echo fileRead('test2.json'), '<br />'.EOL;
-
-    dump( fileRead('test.json', 'json') );
-
-    fileWrite('test3.txt', 'This is text file. Last Access Date: '. date('Y-m-d H:i:s', time()) );
-
-    echo fileRead('test3.txt'), '<br />'.EOL;
-
-    dump(getHeaders());
-
-});
-
 /**/
+const ABOUT = '';
 //Simple route to include module file
 router('get', '/about', CMSIF_MODULES.'/about.php');
 
+const COOKIE_COUNTER = '';
 //Simple HTML page
-router('get', '/main', function(){
+router('get', '/counter', function(){
 
-	headerHTML();
+    $counter = cookieGet('counter', '0');
+    cookieSet('counter', ++$counter);
 
-    echo 'User: ', getUser(), '<br />'.EOL;
-	echo date_default_timezone_get(), '<br />'.EOL;
-	echo cookie('language'), '<br />'.EOL;
-	echo version(), '<br />'.EOL;
-	echo getId(), '<br />'.EOL;
-	echo getModule(), '<br />'.EOL;
-	echo getMethod(), '<br />'.EOL;
+    headerHTML();
+    echo 'Count: ', $counter, '<br />'.EOL;
 
 });
 
-//Routing with IDs
-router('get', '/article/([0-9]*)', function($_matches){
-	$_out = '';
-	switch( $_matches[1] )
-	{
-		case 1:
-			$_out .= '<h3>Article '. (int) $_matches[1].'</h3>'.EOL;
-			$_out .= view('This is my article number 1');
-			break;
-		case 2:
-			$_out .= '<h3>Article '. (int) $_matches[1].'</h3>'.EOL;
-			$_out .= view( ['This is my second article.', 'This is my second paragraph.'] );
-			break;
-		default:
-			error404();
-			break;
-	}
-	
-	if(!empty($_out))
-	{
-		headerHTML();
-		echo $_out;
-	}
-});
-
-//Complex template
-router('get', '/profile', function(){
-
-    fileExecute('/_partials/header.php', ['_type' => 'template']);
-
-    renderBlock('{{ Footer }}', 'footer', 'section');
-    renderView('profile');
-});
-
+const FORM = '';
 //Rendering of Form template with external and internal assets
 router('get', '/form', function(){
     assetExternal('http://necolas.github.com/normalize.css');
     assetExternal('//fonts.googleapis.com/css?family=Roboto', 'css');
     asset('style.css', ['version'=>'123']);
 
-    $_form_fields = [
+    renderBlock('<p><a href="'.getHost().'/">Home</a></p>', 'Home');
+    renderBlock('<h2>Auth form</h2>', 'Header', 'section');
+
+    $form_fields = [
         'text'     => '{"name": "username", "id": "Username"}',
         'password' => '{"name": "password", "id": "Password"}',
         'submit'   => '{"name": "submit", "id": "Submit"}'
     ];
-    form(['method'=>'POST', 'action'=>getHost().'/form', 'fields'=>$_form_fields]);
+
+    $form = form(['method'=>'POST', 'action'=>getHost().'/form', 'fields'=>$form_fields]);
+    renderBlock($form, 'section', 'section');
+
     renderView('form');
 });
 
 //POST action proccessing
-router('post', '/form', function(){ 
+router('post', '/form', function(){
+    headerHTML();
+    echo assetExternal('http://necolas.github.com/normalize.css');
+    echo assetExternal('//fonts.googleapis.com/css?family=Roboto', 'css');
+    echo asset('style.css');
+
+    echo '<p><a href="'.getHost().'/">Home</a></p>'. EOL;
+
     dump(filterPOST());
 });

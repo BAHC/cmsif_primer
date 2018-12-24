@@ -25,8 +25,7 @@ $s_out = '
 renderBlock($s_out, 'header');
 
 $_info = sessionGet('info');
-if(!empty($_info))
-{
+if (!empty($_info)) {
     $_info = '<div class="alert alert-success alert-dismissible fade show" role="alert">
     <strong><i class="fas fa-info-circle"></i></strong> '. $_info .'
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -39,8 +38,7 @@ if(!empty($_info))
 }
 
 $_error = sessionGet('error');
-if(!empty($_error))
-{
+if (!empty($_error)) {
     renderBlock($_error, 'error');
     sessionFlush('error');
 }
