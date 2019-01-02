@@ -1,13 +1,9 @@
 <?php
-const HOME = '';
-/**
- * Custom HOME page
- */
+
+const HOME = 'Custom HOME page'; //-------------------------------------------
+
 router('get', '/', function(){
-    headerHTML();
-    echo assetExternal('http://necolas.github.com/normalize.css');
-    echo assetExternal('//fonts.googleapis.com/css?family=Roboto', 'css');
-    echo asset('style.css');
+    getPageHeader('main');
     echo CMSIF_SYSTEM_NAME, '<br />'.EOL;
 
     echo '<p><a href="'.getHost().'/files">Files</a></p>'. EOL;
@@ -21,14 +17,10 @@ router('get', '/', function(){
     echo '<p><a href="'.getHost().'/db">DB select</a></p>'. EOL;
 });
 
-const FILES = '';
-router('get', '/files', function(){
-    headerHTML();
-    echo assetExternal('http://necolas.github.com/normalize.css');
-    echo assetExternal('//fonts.googleapis.com/css?family=Roboto', 'css');
-    echo asset('style.css');
+const FILES = 'Route Files examples';  //-------------------------------------
 
-    echo '<p><a href="'.getHost().'/">Home</a></p>'. EOL;
+router('get', '/files', function(){
+    getPageHeader();
 
     //Read HTML and PLAIN text files
     echo fileRead('test.html', 'html'), '<br />'.EOL;
@@ -45,8 +37,8 @@ router('get', '/files', function(){
 
 });
 
-const PROFILE = '';
-//Complex template
+const PROFILE = 'Route for Complex template'; //------------------------------
+
 router('get', '/profile', function(){
 
     fileExecute('/_partials/header.php', ['_type' => 'template']);
@@ -55,12 +47,10 @@ router('get', '/profile', function(){
     renderView('profile');
 });
 
-const MAIN = '';
+const MAIN = 'Route for main url'; //-----------------------------------------
+
 router('get', '/main', function(){
-
-    headerHTML();
-
-    echo '<p><a href="'.getHost().'/">Home</a></p>'. EOL;
+    getPageHeader();
 
     echo 'User: ', getUser(), '<br />'.EOL;
     echo date_default_timezone_get(), '<br />'.EOL;
@@ -72,14 +62,15 @@ router('get', '/main', function(){
 
 });
 
-const EXCHANGE = '';
+const EXCHANGE = 'Route for Exchange'; //-------------------------------------
+
 router('get', '/exchange', function(){
+    getPageHeader();
 
-    headerHTML();
-
-    echo '<p><a href="'.getHost().'/">Home</a></p>'. EOL;
-
-    print_r( exchange_rate(['EUR'=>'RUB']) );
+    print_r( exchange_rate(['USD'=>'RUB'], 4) );
+    echo '<br />'.EOL;
+    print_r( exchange_rate(['EUR'=>'RUB'], 4) );
+    echo '<br />'.EOL;
     echo '<br />'.EOL;
     print_r( exchange_rate(['EUR'=>'TRY']) );
     echo '<br />'.EOL;
@@ -95,22 +86,19 @@ router('get', '/exchange', function(){
 
 });
 
-const EXCHANGE_TURKEY = '';
+const EXCHANGE_TURKEY = 'Route for Exchange TRY to USD or EUR'; //------------
+
 router('get', '/exchange/turkey', function(){
+    getPageHeader();
 
-    headerHTML();
-
-    echo '<p><a href="'.getHost().'/">Home</a></p>'. EOL;
-
-    echo '<br />'.EOL;
     echo 'USD: ', turkey_exchange_rate('USD', 3);
     echo '<br />'.EOL;
     echo 'EUR: ', turkey_exchange_rate('EUR', 3);
 
 });
 
-const ARTICLES = '';
-//Routing with IDs
+const ARTICLES = 'Routing with IDs'; //---------------------------------------
+
 router('get', '/article/([0-9]*)', function($_matches){
     $out = '';
     switch( $_matches[1] )
@@ -131,14 +119,15 @@ router('get', '/article/([0-9]*)', function($_matches){
             break;
     }
 
-    headerHTML();
+    getPageHeader();
     echo $out;
     footerHTML();
 });
 
-const DB = '';
+const DB = 'DB example'; //---------------------------------------------------
+
 router('get', '/db', function(){
-    headerHTML();
+    getPageHeader();
 
     echo CMSIF_SYSTEM_NAME, '<br />'.EOL;
 
@@ -154,31 +143,30 @@ router('get', '/login', function(){
     auth('http');
 });
 
-/**/
-const ABOUT = '';
-//Simple route to include module file
+const ABOUT = 'Simple route to include module file'; //-----------------------
+
 router('get', '/about', CMSIF_MODULES.'/about.php');
 
-const COOKIE_COUNTER = '';
-//Simple HTML page
+const COOKIE_COUNTER = 'Simple HTML page with counter'; //--------------------
+
 router('get', '/counter', function(){
 
     $counter = cookieGet('counter', '0');
+
+    //Set Cookie BEFORE any output in browser
     cookieSet('counter', ++$counter);
 
-    headerHTML();
+    getPageHeader();
+
     echo 'Count: ', $counter, '<br />'.EOL;
 
 });
 
-const FORM = '';
-//Rendering of Form template with external and internal assets
-router('get', '/form', function(){
-    assetExternal('http://necolas.github.com/normalize.css');
-    assetExternal('//fonts.googleapis.com/css?family=Roboto', 'css');
-    asset('style.css', ['version'=>'123']);
+const FORM = 'Rendering of Form template with external and internal assets';
 
-    renderBlock('<p><a href="'.getHost().'/">Home</a></p>', 'Home');
+router('get', '/form', function(){
+    getPageHeader();
+
     renderBlock('<h2>Auth form</h2>', 'Header', 'section');
 
     $form_fields = [
@@ -193,14 +181,23 @@ router('get', '/form', function(){
     renderView('form');
 });
 
-//POST action proccessing
-router('post', '/form', function(){
-    headerHTML();
-    echo assetExternal('http://necolas.github.com/normalize.css');
-    echo assetExternal('//fonts.googleapis.com/css?family=Roboto', 'css');
-    echo asset('style.css');
+//POST action proccessing ----------------------------------------------------
 
-    echo '<p><a href="'.getHost().'/">Home</a></p>'. EOL;
+router('post', '/form', function(){
+    getPageHeader();
 
     dump(filterPOST());
 });
+
+// ---------------------------------------------------------------------------
+
+function getPageHeader($section='') {
+    headerHTML();
+    echo assetExternal(getHost().'/css/normalize.css', 'css');
+    echo assetExternal('//fonts.googleapis.com/css?family=Roboto', 'css');
+    echo asset('style.css');
+
+    if ('main'!=$section) {
+        echo '<p><a href="'.getHost().'/">Home</a></p>'. EOL;
+    }
+}
